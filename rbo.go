@@ -90,8 +90,7 @@ func (s *State) UpdateUneven(e int) {
 
 	s.rbo += (float64(s.overlap) / float64(s.depth)) * s.wgt
 
-	/* Extrapolation of overlap at end of short list */
-
+	// Extrapolation of overlap at end of short list
 	s.rbo += (float64(s.shortOverlap*(s.depth-s.shortDepth)) / float64(s.depth*s.shortDepth)) * s.wgt
 }
 
@@ -112,21 +111,27 @@ func Calculate(s, t []int, p float64) float64 {
 
 	st := New(p)
 
+	// make sure s is the short list
 	if len(t) < len(s) {
 		s, t = t, s
 	}
 
+	// stuff all elements where we have matching rankings
 	for i, v := range s {
 		st.Update(v, t[i])
 	}
 
+	// mark the short list as done
 	st.EndShort()
 
+	// if we have any more elements...
 	if len(t) > len(s) {
+		// ... shove the rest of them into UpdateUneven()
 		for _, v := range t[len(s):] {
 			st.UpdateUneven(v)
 		}
 	}
 
+	// calculate and return
 	return st.CalcExtrapolated()
 }
